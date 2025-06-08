@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Learning Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #681155;
+        --secondary-color: #be4332;
+        --text-color: #333;
+        --bg-color: #967979;
+        --modal-gradient: linear-gradient(135deg, #f7e8e8 0%, #e6e6fa 100%);
+        --modal-shadow: 0 8px 32px rgba(71, 22, 22, 0.18);
+        --modal-border: 2.5px solid #958beb;
+        --help-modal-gradient: linear-gradient(135deg, #e6e6fa 0%, #f7e8e8 100%);
+        --explore-modal-gradient: linear-gradient(135deg, #e6e6fa 0%, #f7e8e8 100%);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          to right,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        min-height: 100vh;
+        transition: background 0.3s ease;
+        overflow-x: hidden;
+      }
+
+      body.dark-mode {
+        --primary-color: #1a1a1a;
+        --secondary-color: #333333;
+        --text-color: #fff;
+        --bg-color: #222;
+        --modal-gradient: linear-gradient(135deg, #232323 0%, #2d2d3a 100%);
+        --modal-border: 2.5px solid #333333;
+        --help-modal-gradient: linear-gradient(135deg, #232323 0%, #2d2d3a 100%);
+        --explore-modal-gradient: linear-gradient(135deg, #232323 0%, #2d2d3a 100%);
+      }
+
+      /* --- Top right controls --- */
+      .top-right-controls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .theme-switch {
+        position: static;
+        z-index: auto;
+      }
+      .switch {
+        background: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 20px;
+        cursor: pointer;
+        width: 60px;
+        position: relative;
+      }
+      .switch i {
+        color: #fff;
+        font-size: 14px;
+      }
+      #theme-toggle {
+        display: none;
+      }
+      .profile-btn-top,
+      .logout-btn-top {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--primary-color);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.15rem;
+        cursor: pointer;
+        padding: 10px 22px;
+        border-radius: 50px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: background 0.2s;
+      }
+      .profile-btn-top:hover,
+      .logout-btn-top:hover {
+        background: #8b0505;
+      }
+      .profile-btn-top i,
+      .logout-btn-top i {
+        font-size: 1.4em;
+      }
+      .logout-btn-top {
+        background: #958beb;
+        color: #471616;
+        font-weight: 600;
+        margin-left: 0;
+        transition: background 0.2s, color 0.2s;
+      }
+      .logout-btn-top:hover {
+        background: #6d5fd4;
+        color: #fff;
+      }
+
+      .container {
+        width: 95%;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .header {
+        background: var(--bg-color);
+        padding: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 100%;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .site-logo {
+        height: 98px;
+        vertical-align: middle;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .site-title {
+        font-weight: bold;
+        text-align: center;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin: 0;
+        color: var(--text-color);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+      }
+
+      /* --- Main big round buttons in a circle at center --- */
+      .main-round-btns-section {
+        position: relative;
+        width: 100vw;
+        height: 80vh;
+        min-height: 500px;
+        max-width: 100vw;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .circle-btns-container {
+        position: relative;
+        width: 500px;
+        height: 500px;
+        min-width: 320px;
+        min-height: 320px;
+        max-width: 90vw;
+        max-height: 70vw;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Remove CSS animation, will use JS for rotation */
+        /* transform-origin: 50% 50%; */
+      }
+      .round-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 60%,
+          var(--secondary-color) 100%
+        );
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 700;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        border: none;
+        cursor: pointer;
+        transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+        position: absolute;
+        outline: none;
+        text-align: center;
+        text-shadow: 1px 2px 8px rgba(0, 0, 0, 0.13);
+        user-select: none;
+        z-index: 1;
+        /* Remove animation, will use JS for movement */
+      }
+      .round-btn-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        /* Prevent text/icon from rotating */
+        will-change: transform;
+      }
+      .round-btn .round-btn-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .round-btn:hover,
+      .round-btn:focus {
+        transform: scale(1.07) translateY(-6px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+        background: linear-gradient(135deg, #8b0505 60%, #e48e8e 100%);
+      }
+
+      /* Responsive styles */
+      @media screen and (max-width: 900px) {
+        .circle-btns-container {
+          width: 340px;
+          height: 340px;
+          min-width: 220px;
+          min-height: 220px;
+        }
+        .round-btn {
+          width: 100px;
+          height: 100px;
+          font-size: 1rem;
+        }
+        .round-btn .round-btn-icon {
+          font-size: 1.5rem;
+        }
+      }
+      @media screen and (max-width: 600px) {
+        .main-round-btns-section {
+          min-height: 400px;
+          height: 70vh;
+        }
+        .circle-btns-container {
+          width: 220px;
+          height: 220px;
+        }
+        .round-btn {
+          width: 70px;
+          height: 70px;
+          font-size: 0.8rem;
+        }
+        .round-btn .round-btn-icon {
+          font-size: 1.1rem;
+        }
+      }
+
+      /* Profile Modal Styles (curved, attractive) */
+      .profile-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .profile-modal {
+        background: var(--modal-gradient);
+        color: var(--text-color);
+        border-radius: 2.5rem 1.5rem 2.5rem 1.5rem/2.5rem 2.5rem 1.5rem 1.5rem;
+        box-shadow: var(--modal-shadow);
+        border: var(--modal-border);
+        padding: 2.2rem 2.2rem 1.7rem 2.2rem;
+        min-width: 340px;
+        max-width: 98vw;
+        position: relative;
+        animation: fadeIn 0.2s;
+        overflow: visible;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .profile-modal .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #888;
+        cursor: pointer;
+        z-index: 2;
+      }
+      .profile-modal .profile-pic-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1.2rem;
+      }
+      .profile-modal .profile-pic {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #eee;
+        border: 3px solid var(--secondary-color);
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 12px rgba(149, 139, 235, 0.18);
+      }
+      .profile-modal .edit-pic-label {
+        cursor: pointer;
+        color: var(--primary-color);
+        font-size: 1em;
+        margin-bottom: 0.5rem;
+        text-decoration: underline;
+        display: none;
+      }
+      .profile-modal .profile-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        margin-bottom: 0.5rem;
+      }
+      .profile-modal .profile-field-row {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+      .profile-modal .profile-label {
+        font-weight: 600;
+        min-width: 110px;
+        color: #471616;
+        font-size: 1.05em;
+      }
+      .profile-modal .profile-value {
+        font-size: 1.05em;
+        color: #333;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 0.3em 0.7em;
+        flex: 1;
+        word-break: break-all;
+      }
+      .profile-modal input[type="text"],
+      .profile-modal input[type="tel"] {
+        width: 100%;
+        padding: 0.5rem 0.7rem;
+        border-radius: 8px;
+        border: 1.5px solid #ccc;
+        background: #fff;
+        color: var(--text-color);
+        font-size: 1.05em;
+        transition: border 0.2s;
+      }
+      .profile-modal input[type="text"]:focus,
+      .profile-modal input[type="tel"]:focus {
+        border: 1.5px solid var(--secondary-color);
+        outline: none;
+      }
+      .profile-modal .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.2rem;
+      }
+      .profile-modal .modal-actions button {
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        background: var(--primary-color);
+        color: #fff;
+        transition: background 0.2s;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .profile-modal .modal-actions .cancel-btn {
+        background: #aaa;
+        color: #fff;
+      }
+      .profile-modal .modal-actions .cancel-btn:hover {
+        background: #888;
+      }
+      .profile-modal .modal-actions .save-btn:hover {
+        background: #8b0505;
+      }
+      .profile-modal .modal-actions .edit-btn {
+        background: var(--secondary-color);
+        color: #471616;
+        margin-right: auto;
+        font-weight: 600;
+        transition: background 0.2s, color 0.2s;
+      }
+      .profile-modal .modal-actions .edit-btn:hover {
+        background: #6d5fd4;
+        color: #fff;
+      }
+      .profile-modal .modal-actions .save-btn,
+      .profile-modal .modal-actions .cancel-btn {
+        display: none;
+      }
+      .profile-modal.edit-mode .modal-actions .save-btn,
+      .profile-modal.edit-mode .modal-actions .cancel-btn {
+        display: inline-block;
+      }
+      .profile-modal.edit-mode .modal-actions .edit-btn {
+        display: none;
+      }
+      .profile-modal .edit-pic-label {
+        display: none;
+      }
+      .profile-modal.edit-mode .edit-pic-label {
+        display: block;
+      }
+      .profile-modal .profile-value {
+        border: none;
+      }
+      .profile-modal.edit-mode .profile-value {
+        display: none;
+      }
+      .profile-modal.edit-mode input[type="text"],
+      .profile-modal.edit-mode input[type="tel"] {
+        display: block;
+      }
+      .profile-modal input[type="text"],
+      .profile-modal input[type="tel"] {
+        display: none;
+      }
+      .profile-modal.edit-mode input[type="text"],
+      .profile-modal.edit-mode input[type="tel"] {
+        display: block;
+      }
+      /* Responsive modal */
+      @media (max-width: 500px) {
+        .profile-modal {
+          min-width: 90vw;
+          padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+        }
+        .profile-modal .profile-label {
+          min-width: 80px;
+        }
+      }
+
+      /* Help Modal Styles */
+      .help-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(40, 0, 60, 0.45);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s;
+      }
+      .help-modal {
+        background: var(--help-modal-gradient);
+        color: var(--text-color);
+        border-radius: 2.5rem 1.5rem 2.5rem 1.5rem/2.5rem 2.5rem 1.5rem 1.5rem;
+        box-shadow: 0 12px 40px 0 rgba(104, 17, 85, 0.18), 0 2px 8px 0 #be433233;
+        border: 2.5px solid #958beb;
+        padding: 2.5rem 2.5rem 2rem 2.5rem;
+        min-width: 340px;
+        max-width: 95vw;
+        position: relative;
+        animation: fadeIn 0.2s;
+        overflow: visible;
+        text-align: center;
+      }
+      .help-modal .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #888;
+        cursor: pointer;
+        z-index: 2;
+        transition: color 0.2s;
+      }
+      .help-modal .close-btn:hover {
+        color: #be4332;
+      }
+      .help-modal .help-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 0.7rem;
+        letter-spacing: 0.02em;
+      }
+      .help-modal .help-desc {
+        font-size: 1.1rem;
+        margin-bottom: 1.2rem;
+        color: #471616;
+      }
+      .help-modal .contact-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        align-items: center;
+        margin-bottom: 1.2rem;
+      }
+      .help-modal .contact-method {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        background: #f7e8e8;
+        border-radius: 1.2rem;
+        padding: 0.7rem 1.5rem;
+        box-shadow: 0 2px 8px #be433233;
+        font-size: 1.1rem;
+        color: #681155;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .help-modal .contact-method i {
+        font-size: 1.5rem;
+        color: #be4332;
+      }
+      .help-modal .contact-method a {
+        color: #681155;
+        text-decoration: underline;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .help-modal .contact-method a:hover {
+        color: #be4332;
+      }
+      .help-modal .help-footer {
+        font-size: 0.95rem;
+        color: #888;
+        margin-top: 0.7rem;
+      }
+      @media (max-width: 500px) {
+        .help-modal {
+          min-width: 90vw;
+          padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+        }
+        .help-modal .help-title {
+          font-size: 1.3rem;
+        }
+        .help-modal .contact-method {
+          font-size: 0.95rem;
+          padding: 0.5rem 0.7rem;
+        }
+      }
+
+      /* Explore Modal Styles */
+      .explore-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(40, 0, 60, 0.45);
+        z-index: 3500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s;
+      }
+      .explore-modal {
+        background: var(--explore-modal-gradient);
+        color: var(--text-color);
+        border-radius: 2.5rem 1.5rem 2.5rem 1.5rem/2.5rem 2.5rem 1.5rem 1.5rem;
+        box-shadow: 0 12px 40px 0 rgba(104, 17, 85, 0.18), 0 2px 8px 0 #be433233;
+        border: 2.5px solid #958beb;
+        padding: 2.5rem 2.5rem 2rem 2.5rem;
+        min-width: 340px;
+        max-width: 95vw;
+        position: relative;
+        animation: fadeIn 0.2s;
+        overflow: visible;
+        text-align: center;
+      }
+      .explore-modal .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #888;
+        cursor: pointer;
+        z-index: 2;
+        transition: color 0.2s;
+      }
+      .explore-modal .close-btn:hover {
+        color: #be4332;
+      }
+      .explore-modal .explore-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 0.7rem;
+        letter-spacing: 0.02em;
+      }
+      .explore-modal .explore-desc {
+        font-size: 1.1rem;
+        margin-bottom: 1.2rem;
+        color: #471616;
+      }
+      .explore-modal .explore-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        align-items: center;
+        margin-bottom: 1.2rem;
+      }
+      .explore-modal .explore-link {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        background: #f7e8e8;
+        border-radius: 1.2rem;
+        padding: 0.7rem 1.5rem;
+        box-shadow: 0 2px 8px #be433233;
+        font-size: 1.1rem;
+        color: #681155;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .explore-modal .explore-link i {
+        font-size: 1.5rem;
+        color: #be4332;
+      }
+      .explore-modal .explore-link a {
+        color: #681155;
+        text-decoration: underline;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .explore-modal .explore-link a:hover {
+        color: #be4332;
+      }
+      .explore-modal .explore-footer {
+        font-size: 0.95rem;
+        color: #888;
+        margin-top: 0.7rem;
+      }
+      @media (max-width: 500px) {
+        .explore-modal {
+          min-width: 90vw;
+          padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+        }
+        .explore-modal .explore-title {
+          font-size: 1.3rem;
+        }
+        .explore-modal .explore-link {
+          font-size: 0.95rem;
+          padding: 0.5rem 0.7rem;
+        }
+      }
+
+
+      .gehu-bg-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 0;
+    transform: translate(-50%, -50%);
+    font-size: 18vw;
+    font-weight: 900;
+    color: #e6e6fa;
+    opacity: 0.13;
+    letter-spacing: 2vw;
+    pointer-events: none;
+    user-select: none;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+    text-shadow: 0 4px 32px #68115522, 0 1px 0 #fff;
+  }
+  body.dark-mode .gehu-bg-text {
+    color: #232323;
+    opacity: 0.10;
+    text-shadow: 0 4px 32px #fff1, 0 1px 0 #333;
+  }
+
+
+    </style>
+  </head>
+  <body>
+    <!-- Top right controls: dark mode + profile + logout -->
+    <div class="top-right-controls">
+      <div class="theme-switch">
+        <input type="checkbox" id="theme-toggle" />
+        <label for="theme-toggle" class="switch">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </label>
+      </div>
+      <button class="profile-btn-top" id="profileBtn" type="button">
+        <i class="fas fa-user-circle"></i>
+        Profile
+      </button>
+      <button class="logout-btn-top" id="logoutBtn" type="button">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+
+    <header class="header">
+      <nav class="container nav">
+        <img src="hill-black.png" alt="GEHU Logo" class="site-logo" />
+      </nav>
+    </header>
+
+    <!-- Main Section: Big Round Buttons in a Circle -->
+    <main>
+      <section class="main-round-btns-section">
+        <div class="circle-btns-container" id="circleBtnsContainer">
+          <button class="round-btn" id="notesBtn" type="button">
+            <span class="round-btn-inner">
+              <span class="round-btn-icon"><i class="fas fa-book"></i></span>
+              NOTES
+            </span>
+          </button>
+          <button class="round-btn" id="coursesBtn" type="button">
+            <span class="round-btn-inner">
+              <span class="round-btn-icon"><i class="fas fa-graduation-cap"></i></span>
+              COURSES
+            </span>
+          </button>
+          <button class="round-btn" id="exploreBtn" type="button">
+            <span class="round-btn-inner">
+              <span class="round-btn-icon"><i class="fas fa-compass"></i></span>
+              EXPLORE
+            </span>
+          </button>
+          <button class="round-btn" id="courseNotesBtn" type="button">
+            <span class="round-btn-inner">
+              <span class="round-btn-icon"><i class="fas fa-sticky-note"></i></span>
+              COURSE NOTES
+            </span>
+          </button>
+          <button class="round-btn" id="helpBtn" type="button">
+            <span class="round-btn-inner">
+              <span class="round-btn-icon"><i class="fas fa-question-circle"></i></span>
+              HELP
+            </span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Profile Modal Root -->
+    <div id="profile-modal-root"></div>
+    <!-- Help Modal Root -->
+    <div id="help-modal-root"></div>
+    <!-- Explore Modal Root -->
+    <div id="explore-modal-root"></div>
+
+    <script>
+      // Add dark mode functionality
+      const darkModeToggle = document.getElementById("theme-toggle");
+      if (darkModeToggle) {
+        darkModeToggle.addEventListener("change", () => {
+          document.body.classList.toggle("dark-mode");
+        });
+      }
+
+      // Logout button logic
+      const logoutBtn = document.getElementById("logoutBtn");
+      logoutBtn.addEventListener("click", function () {
+        // Optionally clear user data
+        // localStorage.removeItem('user_profile');
+        window.location.href = "LoginPage.html";
+      });
+
+      // Profile Modal Logic
+      const profileBtn = document.getElementById("profileBtn");
+      const profileModalRoot = document.getElementById("profile-modal-root");
+
+      // Default profile data (can be loaded from localStorage)
+      function getProfileData() {
+        const data = localStorage.getItem("user_profile");
+        if (data) {
+          try {
+            return JSON.parse(data);
+          } catch (e) {}
+        }
+        // Default values
+        return {
+          username: "student220011",
+          name: "Your Name",
+          course: "B.Tech CSE",
+          roll: "220011",
+          mobile: "",
+          profilePic: "",
+        };
+      }
+      function saveProfileData(data) {
+        localStorage.setItem("user_profile", JSON.stringify(data));
+      }
+
+      function showProfileModal() {
+        const data = getProfileData();
+        // Modal HTML (view mode by default)
+        profileModalRoot.innerHTML = `
+          <div class="profile-modal-overlay" tabindex="-1">
+            <div class="profile-modal" role="dialog" aria-modal="true" id="profileModalBox">
+              <button class="close-btn" title="Close" type="button" id="closeProfileModalBtn">&times;</button>
+              <div class="profile-pic-wrapper">
+                <img src="${
+                  data.profilePic
+                    ? data.profilePic
+                    : "https://ui-avatars.com/api/?name=" +
+                      encodeURIComponent(data.name || "User") +
+                      "&background=e48e8e&color=760404&size=128"
+                }" alt="Profile Picture" class="profile-pic" id="profilePicImg">
+                <label for="profilePicInput" class="edit-pic-label" id="editPicLabel"><i class="fas fa-camera"></i> Change Photo</label>
+                <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
+              </div>
+              <form id="profileForm" autocomplete="off">
+                <div class="profile-fields">
+                  <div class="profile-field-row">
+                    <span class="profile-label">Username</span>
+                    <span class="profile-value" id="view-username"></span>
+                    <input type="text" id="profile-username" maxlength="32" autocomplete="username" required>
+                  </div>
+                  <div class="profile-field-row">
+                    <span class="profile-label">Name</span>
+                    <span class="profile-value" id="view-name"></span>
+                    <input type="text" id="profile-name" maxlength="64" autocomplete="name" required>
+                  </div>
+                  <div class="profile-field-row">
+                    <span class="profile-label">Course</span>
+                    <span class="profile-value" id="view-course"></span>
+                    <input type="text" id="profile-course" maxlength="64" placeholder="e.g. B.Tech CSE">
+                  </div>
+                  <div class="profile-field-row">
+                    <span class="profile-label">Roll No.</span>
+                    <span class="profile-value" id="view-roll"></span>
+                    <input type="text" id="profile-roll" maxlength="32" placeholder="e.g. 220011">
+                  </div>
+                  <div class="profile-field-row">
+                    <span class="profile-label">Mobile</span>
+                    <span class="profile-value" id="view-mobile"></span>
+                    <input type="tel" id="profile-mobile" maxlength="15" pattern="[0-9]{10,15}" placeholder="e.g. 9876543210">
+                  </div>
+                </div>
+                <div class="modal-actions">
+                  <button type="button" class="edit-btn" id="editProfileBtn"><i class="fas fa-pen"></i> Edit</button>
+                  <button type="button" class="cancel-btn" id="cancelProfileBtn">Cancel</button>
+                  <button type="submit" class="save-btn" id="saveProfileBtn">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+
+        // Fill view mode values
+        document.getElementById("view-username").textContent =
+          data.username || "";
+        document.getElementById("view-name").textContent = data.name || "";
+        document.getElementById("view-course").textContent = data.course || "";
+        document.getElementById("view-roll").textContent = data.roll || "";
+        document.getElementById("view-mobile").textContent = data.mobile || "";
+
+        // Fill input values
+        document.getElementById("profile-username").value = data.username || "";
+        document.getElementById("profile-name").value = data.name || "";
+        document.getElementById("profile-course").value = data.course || "";
+        document.getElementById("profile-roll").value = data.roll || "";
+        document.getElementById("profile-mobile").value = data.mobile || "";
+
+        // Modal starts in view mode
+        const modalBox = document.getElementById("profileModalBox");
+        modalBox.classList.remove("edit-mode");
+
+        // Focus trap for accessibility
+        setTimeout(() => {
+          document.getElementById("closeProfileModalBtn").focus();
+        }, 100);
+
+        // Close modal logic
+        function closeModal() {
+          profileModalRoot.innerHTML = "";
+          document.body.style.overflow = "";
+          document.removeEventListener("keydown", escListener);
+        }
+        function escListener(e) {
+          if (e.key === "Escape") closeModal();
+        }
+        document.getElementById("closeProfileModalBtn").onclick = closeModal;
+        document.getElementById("cancelProfileBtn").onclick = function () {
+          // Cancel: revert to view mode, discard edits
+          modalBox.classList.remove("edit-mode");
+          // Reset input values to last saved
+          document.getElementById("profile-username").value =
+            data.username || "";
+          document.getElementById("profile-name").value = data.name || "";
+          document.getElementById("profile-course").value = data.course || "";
+          document.getElementById("profile-roll").value = data.roll || "";
+          document.getElementById("profile-mobile").value = data.mobile || "";
+          // Hide edit pic label
+          document.getElementById("editPicLabel").style.display = "none";
+        };
+        document.querySelector(".profile-modal-overlay").onclick = function (
+          e
+        ) {
+          if (e.target === this) closeModal();
+        };
+        document.addEventListener("keydown", escListener);
+
+        // Edit button logic
+        document.getElementById("editProfileBtn").onclick = function () {
+          modalBox.classList.add("edit-mode");
+          // Show edit pic label
+          document.getElementById("editPicLabel").style.display = "block";
+          // Focus first input
+          setTimeout(() => {
+            document.getElementById("profile-username").focus();
+          }, 100);
+        };
+
+        // Profile picture upload logic
+        const profilePicInput = document.getElementById("profilePicInput");
+        const profilePicImg = document.getElementById("profilePicImg");
+        document.getElementById("editPicLabel").onclick = function () {
+          profilePicInput.value = "";
+          profilePicInput.click();
+        };
+        profilePicInput.onchange = function (e) {
+          const file = e.target.files[0];
+          if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+              profilePicImg.src = evt.target.result;
+              // Save immediately to localStorage if in edit mode
+              if (modalBox.classList.contains("edit-mode")) {
+                const updated = getProfileData();
+                updated.profilePic = evt.target.result;
+                saveProfileData(updated);
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+
+        // Save profile logic
+        document.getElementById("profileForm").onsubmit = function (e) {
+          e.preventDefault();
+          // Only save if in edit mode
+          if (!modalBox.classList.contains("edit-mode")) return;
+          const updated = {
+            username: document.getElementById("profile-username").value.trim(),
+            name: document.getElementById("profile-name").value.trim(),
+            course: document.getElementById("profile-course").value.trim(),
+            roll: document.getElementById("profile-roll").value.trim(),
+            mobile: document.getElementById("profile-mobile").value.trim(),
+            profilePic: profilePicImg.src,
+          };
+          saveProfileData(updated);
+          // Update view mode values
+          document.getElementById("view-username").textContent =
+            updated.username;
+          document.getElementById("view-name").textContent = updated.name;
+          document.getElementById("view-course").textContent = updated.course;
+          document.getElementById("view-roll").textContent = updated.roll;
+          document.getElementById("view-mobile").textContent = updated.mobile;
+          // Switch back to view mode
+          modalBox.classList.remove("edit-mode");
+          document.getElementById("editPicLabel").style.display = "none";
+        };
+      }
+
+      profileBtn.addEventListener("click", showProfileModal);
+
+      // Main round button click handlers (redirects to placeholder pages)
+      document.getElementById("notesBtn").onclick = function () {
+        window.location.href = "NotesAdding.html";
+      };
+      document.getElementById("coursesBtn").onclick = function () {
+        window.location.href = "courses.html";
+      };
+      // Explore button: show popup with GEHU official, Instagram, and admission links
+      document.getElementById("exploreBtn").onclick = function () {
+        showExploreModal();
+      };
+      document.getElementById("courseNotesBtn").onclick = function () {
+        window.location.href = "selection.html";
+      };
+
+      // Explore Modal Logic
+      const exploreModalRoot = document.getElementById("explore-modal-root");
+      function showExploreModal() {
+        exploreModalRoot.innerHTML = `
+          <div class="explore-modal-overlay" tabindex="-1">
+            <div class="explore-modal" role="dialog" aria-modal="true" id="exploreModalBox">
+              <button class="close-btn" title="Close" type="button" id="closeExploreModalBtn">&times;</button>
+              <div class="explore-title"><i class="fas fa-university"></i> Explore Graphic Era Hill University</div>
+              <div class="explore-desc">
+                Discover more about Graphics Era University, connect on social media, and find other information:
+              </div>
+              <div class="explore-links">
+                <div class="explore-link">
+                  <i class="fas fa-globe"></i>
+                  <span>
+                    Official Website:
+                    <a href="https://www.gehu.ac.in/" target="_blank" rel="noopener">gehu.ac.in</a>
+                  </span>
+                </div>
+                <div class="explore-link">
+                  <i class="fab fa-instagram"></i>
+                  <span>
+                    Instagram:
+                    <a href="https://instagram.com/graphics_era" target="_blank" rel="noopener">@graphics_era</a>
+                  </span>
+                </div>
+                <div class="explore-link">
+                  <i class="fas fa-user-plus"></i>
+                  <span>
+                    Admissions:
+                    <a href="https://www.gehu.ac.in/content/gehu/en/admissions.html" target="_blank" rel="noopener">Admission Info</a>
+                  </span>
+                </div>
+                <div class="explore-link">
+                  <i class="fas fa-phone"></i>
+                  <span>
+                    Admission Helpline:
+                    <a href="tel:+911352600600">+91 135 2600600</a>
+                  </span>
+                </div>
+                <div class="explore-link">
+                  <i class="fas fa-envelope"></i>
+                  <span>
+                    Email:
+                    <a href="mailto:admissions@gehu.ac.in">admissions@gehu.ac.in</a>
+                  </span>
+                </div>
+              </div>
+              <div class="explore-footer">
+                <em>All links open in a new tab. For more, visit the official website.</em>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Focus trap for accessibility
+        setTimeout(() => {
+          document.getElementById("closeExploreModalBtn").focus();
+        }, 100);
+
+        // Close modal logic
+        function closeExploreModal() {
+          exploreModalRoot.innerHTML = "";
+          document.body.style.overflow = "";
+          document.removeEventListener("keydown", escListener);
+        }
+        function escListener(e) {
+          if (e.key === "Escape") closeExploreModal();
+        }
+        document.getElementById("closeExploreModalBtn").onclick = closeExploreModal;
+        document.querySelector(".explore-modal-overlay").onclick = function (e) {
+          if (e.target === this) closeExploreModal();
+        };
+        document.addEventListener("keydown", escListener);
+      }
+
+      // Help Modal Logic
+      const helpBtn = document.getElementById("helpBtn");
+      const helpModalRoot = document.getElementById("help-modal-root");
+
+      function showHelpModal() {
+        helpModalRoot.innerHTML = `
+          <div class="help-modal-overlay" tabindex="-1">
+            <div class="help-modal" role="dialog" aria-modal="true" id="helpModalBox">
+              <button class="close-btn" title="Close" type="button" id="closeHelpModalBtn">&times;</button>
+              <div class="help-title"><i class="fas fa-headset"></i> Need Help? Contact Admin</div>
+              <div class="help-desc">
+                If you have any questions, issues, or need support, you can reach out to the admin using any of the following methods:
+              </div>
+              <div class="contact-methods">
+                <div class="contact-method">
+                  <i class="fas fa-envelope"></i>
+                  <span>Email: <a href="mailto:xxxxxxxx.com">xxxxxxxx.com</a></span>
+                </div>
+                <div class="contact-method">
+                  <i class="fas fa-phone-alt"></i>
+                  <span>Phone: <a href="tel:+919058542xxx">+91 9058542xxx</a></span>
+                </div>
+                <div class="contact-method">
+                  <i class="fab fa-whatsapp"></i>
+                  <span>WhatsApp: <a href="https://wa.me/9058542xxx" target="_blank">+91 9058542xxx</a></span>
+                </div>
+                
+              </div>
+              
+            </div>
+          </div>
+        `;
+
+        // Focus trap for accessibility
+        setTimeout(() => {
+          document.getElementById("closeHelpModalBtn").focus();
+        }, 100);
+
+        // Close modal logic
+        function closeHelpModal() {
+          helpModalRoot.innerHTML = "";
+          document.body.style.overflow = "";
+          document.removeEventListener("keydown", escListener);
+        }
+        function escListener(e) {
+          if (e.key === "Escape") closeHelpModal();
+        }
+        document.getElementById("closeHelpModalBtn").onclick = closeHelpModal;
+        document.querySelector(".help-modal-overlay").onclick = function (e) {
+          if (e.target === this) closeHelpModal();
+        };
+        document.addEventListener("keydown", escListener);
+      }
+
+      helpBtn.addEventListener("click", showHelpModal);
+
+      // --- Animate buttons in a circle using JS, but keep text/icon upright ---
+      function positionAndRotateCircleButtons(angleOffset = 0) {
+        const container = document.getElementById('circleBtnsContainer');
+        const buttons = container.querySelectorAll('.round-btn');
+        const n = buttons.length;
+        // Get container size
+        const rect = container.getBoundingClientRect();
+        const w = rect.width || 500;
+        const h = rect.height || 500;
+        // Circle radius (make sure buttons don't overflow)
+        const r = Math.min(w, h) / 2 - (buttons[0].offsetWidth / 2 || 85);
+
+        for (let i = 0; i < n; ++i) {
+          // Calculate angle for this button
+          const baseAngle = (2 * Math.PI * i) / n - Math.PI / 2;
+          const angle = baseAngle + angleOffset;
+          const x = Math.cos(angle) * r + w / 2 - buttons[i].offsetWidth / 2;
+          const y = Math.sin(angle) * r + h / 2 - buttons[i].offsetHeight / 2;
+          buttons[i].style.left = x + "px";
+          buttons[i].style.top = y + "px";
+          // Keep the button itself unrotated, but rotate the inner content to keep it upright
+          // (We rotate the button -angle in deg, and rotate the inner content +angle in deg)
+          buttons[i].style.transform = `rotate(${angle * 180 / Math.PI}deg)`;
+          const inner = buttons[i].querySelector('.round-btn-inner');
+          if (inner) {
+            inner.style.transform = `rotate(${-angle * 180 / Math.PI}deg)`;
+          }
+        }
+      }
+
+      // Animation loop for rotation
+      let lastTimestamp = null;
+      let currentAngle = 0;
+      const ROTATE_SPEED = 0.5 * Math.PI / 4; // radians per second (adjust for speed)
+
+      function animateCircleButtons(ts) {
+        if (!lastTimestamp) lastTimestamp = ts;
+        const dt = (ts - lastTimestamp) / 1000;
+        lastTimestamp = ts;
+        currentAngle += ROTATE_SPEED * dt;
+        positionAndRotateCircleButtons(currentAngle);
+        requestAnimationFrame(animateCircleButtons);
+      }
+
+      // Initial position and start animation
+      window.addEventListener('DOMContentLoaded', () => {
+        positionAndRotateCircleButtons(0);
+        requestAnimationFrame(animateCircleButtons);
+      });
+      // Reposition on resize
+      window.addEventListener('resize', () => positionAndRotateCircleButtons(currentAngle));
+    </script>
+  </body>
+</html>
+
+<div class="gehu-bg-text" aria-hidden="true">GEHU</div>
+
+

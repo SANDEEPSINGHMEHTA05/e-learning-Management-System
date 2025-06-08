@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shared Notes Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --primary: #4f8cff;
+            --primary-dark: #3a6fd8;
+            --background: #181a1b;
+            --card-bg: #23272a;
+            --border-radius: 22px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.25);
+            --input-bg: #23272a;
+            --input-border: #353b41;
+            --highlight: #ffb300;
+            --highlight-dark: #e09c00;
+            --text-main: #f1f1f1;
+            --text-secondary: #b0b3b8;
+            --accent: #4f8cff;
+            --danger: #ff4d4f;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-main);
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 48px auto 0 auto;
+            padding: 0 16px 40px 16px;
+            position: relative;
+        }
+        .top-image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+        .top-image-wrapper img {
+            max-width: 160px;
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px #0005;
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            font-size: 2.1em;
+            font-weight: 800;
+            text-shadow: 0 2px 16px #0008;
+        }
+        #note-form {
+            margin-bottom: 36px;
+            background: var(--card-bg);
+            padding: 32px 24px 28px 24px;
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .input-section {
+            background: #1a1d1f;
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+            padding: 18px 16px 12px 16px;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #note-form input,
+        #note-form .content-editable-div {
+            font-size: 1.08em;
+            border: 1.5px solid var(--input-border);
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            padding: 12px 14px;
+            outline: none;
+            transition: border 0.2s, background 0.2s;
+            box-shadow: 0 1px 4px #0003;
+        }
+        #note-form input:focus,
+        #note-form .content-editable-div:focus {
+            border: 2px solid var(--primary);
+            background: #232c3a;
+        }
+        #note-form .content-editable-div {
+            min-height: 70px;
+            max-height: 1000px;
+            overflow-y: auto;
+            resize: none;
+            white-space: pre-wrap;
+        }
+        #note-form .add-image-btn {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 0;
+            font-size: 1.08em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.18s, box-shadow 0.18s;
+            margin-top: 6px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px #0002;
+        }
+        #note-form .add-image-btn:hover, #note-form .add-image-btn:focus {
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            box-shadow: 0 4px 16px #4f8cff33;
+        }
+        #note-form button[type="submit"] {
+            background: linear-gradient(90deg, var(--highlight), var(--highlight-dark));
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 0;
+            font-size: 1.18em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.18s, box-shadow 0.18s;
+            margin-top: 8px;
+            width: 100%;
+            box-shadow: 0 2px 12px #ffb30022;
+            letter-spacing: 0.5px;
+        }
+        #note-form button[type="submit"]:hover, #note-form button[type="submit"]:focus {
+            background: linear-gradient(90deg, var(--highlight-dark), var(--highlight));
+            box-shadow: 0 4px 16px #ffb30033;
+        }
+        #note-form .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        #note-form input[type="file"] {
+            display: none;
+        }
+        .image-preview-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .image-preview-list img {
+            max-width: 60px;
+            max-height: 60px;
+            border-radius: 8px;
+            border: 1px solid #353b41;
+            object-fit: cover;
+        }
+        /* Show All Notes Button - round, fixed top/middle right */
+        .show-notes-btn {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            z-index: 1200;
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            min-height: 64px;
+            max-width: 64px;
+            max-height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 16px #4f8cff55, 0 2px 12px #0008;
+            font-size: 1.7em;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+            letter-spacing: 0.5px;
+            outline: none;
+        }
+        .show-notes-btn:hover, .show-notes-btn:focus {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            box-shadow: 0 6px 24px #4f8cff88, 0 2px 12px #0008;
+            transform: scale(1.08);
+        }
+        .show-notes-btn .show-notes-icon {
+            margin-right: 0;
+            font-size: 1.3em;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .show-notes-btn .show-notes-label {
+            display: none;
+        }
+        @media (max-width: 700px) {
+            .container {
+                max-width: 98vw;
+                margin-top: 18px;
+                padding: 0 4vw 24px 4vw;
+            }
+            #note-form {
+                padding: 16px 8px 14px 8px;
+            }
+            .fullscreen-note-content {
+                padding: 18px 4vw 14px 4vw;
+            }
+            .show-notes-btn {
+                top: 18px;
+                right: 12px;
+                width: 52px;
+                height: 52px;
+                min-width: 52px;
+                min-height: 52px;
+                max-width: 52px;
+                max-height: 52px;
+                font-size: 1.25em;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.4em;
+            }
+            #note-form input,
+            #note-form .content-editable-div {
+                font-size: 0.98em;
+                padding: 8px 8px;
+            }
+            #note-form button[type="submit"] {
+                font-size: 1em;
+                padding: 10px 0;
+            }
+            #note-form .add-image-btn {
+                font-size: 1em;
+                padding: 10px 0;
+            }
+            .input-section {
+                padding: 10px 6px 8px 6px;
+            }
+            .show-notes-btn {
+                top: 10px;
+                right: 6px;
+                width: 44px;
+                height: 44px;
+                min-width: 44px;
+                min-height: 44px;
+                max-width: 44px;
+                max-height: 44px;
+                font-size: 1em;
+            }
+        }
+        /* Modal and Fullscreen note styles (copied from original) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: #23272a;
+            border-radius: 18px;
+            box-shadow: 0 4px 32px #000a;
+            padding: 28px 24px 22px 24px;
+            min-width: 280px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: var(--text-main);
+        }
+        .modal h3 {
+            margin-top: 0;
+            margin-bottom: 14px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .modal .modal-actions {
+            margin-top: 22px;
+            text-align: right;
+        }
+        .modal .modal-actions button {
+            margin-left: 10px;
+            border-radius: 8px;
+            padding: 7px 18px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            transition: background 0.18s;
+        }
+        .modal .modal-actions button:hover, .modal .modal-actions button:focus {
+            background: var(--primary-dark);
+        }
+        .modal .modal-actions #confirm-delete-btn {
+            background: var(--danger);
+        }
+        .modal .modal-actions #confirm-delete-btn:hover {
+            background: #c82333;
+        }
+        /* Fullscreen note view */
+        .fullscreen-note {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #181a1b;
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 40px 0 0 0;
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .fullscreen-note-content {
+            max-width: 700px;
+            width: 98vw;
+            background: #23272a;
+            border-radius: 22px;
+            box-shadow: 0 4px 32px #000a;
+            padding: 38px 28px 28px 28px;
+            margin: 0 auto;
+            color: var(--text-main);
+        }
+        .fullscreen-note .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            background: var(--primary-dark);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.7em;
+            cursor: pointer;
+            z-index: 2100;
+            box-shadow: 0 2px 8px #0005;
+            transition: background 0.18s;
+        }
+        .fullscreen-note .close-btn:hover {
+            background: var(--primary);
+        }
+        .fullscreen-note-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .fullscreen-note-images img {
+            border-radius: 10px;
+            border: 1.5px solid #353b41;
+            object-fit: contain;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-image-wrapper">
+            <img src="https://images.pexels.com/photos/4238511/pexels-photo-4238511.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Notes Hub" />
+        </div>
+        <h1>📝 NOTES . HUB 📝</h1>
+        <form id="note-form" autocomplete="off">
+            <div class="input-section">
+                <input type="text" id="author" placeholder="Your name" required maxlength="32">
+            </div>
+            <div class="input-section">
+                <input type="text" id="title" placeholder="Note title" required maxlength="64">
+            </div>
+            <div class="input-section">
+                <div id="content" class="content-editable-div" contenteditable="true" placeholder="Write your note here..." style="min-height:70px;max-height:1000px;overflow-y:auto;"></div>
+            </div>
+            <div class="input-section" style="gap: 0;">
+                <button type="button" class="add-image-btn" id="add-image-btn" tabindex="0">
+                    <svg width="20" height="20" fill="none" style="vertical-align:middle;" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="14" height="10" rx="2" stroke="#fff" stroke-width="2" fill="none"/><circle cx="7" cy="10" r="1.5" fill="#fff"/><path d="M8 13l2-2 3 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                    Add Image
+                </button>
+                <input type="file" id="images" accept="image/*">
+            </div>
+            <div class="form-actions input-section" style="margin-bottom:0;">
+                <button type="submit" id="add-note-btn">Add Note</button>
+            </div>
+        </form>
+    </div>
+    <!-- Show All Notes Button: round, fixed top/middle right -->
+    <button class="show-notes-btn" id="show-notes-btn" title="Show All Notes" aria-label="Show All Notes">
+        <span class="show-notes-icon" aria-hidden="true">&#128196;</span>
+        <span class="show-notes-label">Show All Notes</span>
+    </button>
+    <div id="modal-root"></div>
+    <div id="fullscreen-note-root"></div>
+    <script>
+        // Helper: Generate a simple user id for this browser session
+        function getUserId() {
+            let uid = localStorage.getItem('shared_notes_userid');
+            if (!uid) {
+                uid = 'u_' + Math.random().toString(36).substr(2, 12) + Date.now();
+                localStorage.setItem('shared_notes_userid', uid);
+            }
+            return uid;
+        }
+        const currentUserId = getUserId();
+
+        // Use localStorage to persist notes
+        function getNotes() {
+            return JSON.parse(localStorage.getItem('shared_notes') || '[]');
+        }
+
+        function saveNotes(notes) {
+            localStorage.setItem('shared_notes', JSON.stringify(notes));
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[m];
+            });
+        }
+
+        // Modal helpers
+        function showModal(contentHtml) {
+            const modalRoot = document.getElementById('modal-root');
+            modalRoot.innerHTML = `
+                <div class="modal-overlay" tabindex="-1">
+                    <div class="modal">${contentHtml}</div>
+                </div>
+            `;
+            const overlay = modalRoot.querySelector('.modal-overlay');
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeModal();
+            });
+            document.addEventListener('keydown', escListener);
+        }
+        function closeModal() {
+            document.getElementById('modal-root').innerHTML = '';
+            document.removeEventListener('keydown', escListener);
+        }
+        function escListener(e) {
+            if (e.key === 'Escape') closeModal();
+        }
+
+        // Fullscreen note view
+        function showFullscreenNote(note) {
+            const root = document.getElementById('fullscreen-note-root');
+            root.innerHTML = `
+                <div class="fullscreen-note" tabindex="-1">
+                    <button class="close-btn" onclick="closeFullscreenNote()" title="Close">&times;</button>
+                    <div class="fullscreen-note-content">
+                        <h2 style="margin-top:0;color:var(--primary);font-weight:800;text-shadow:0 1px 8px #0005;">${escapeHTML(note.title)}</h2>
+                        <div style="color:var(--text-secondary);font-size:1em;margin-bottom:8px;">by ${escapeHTML(note.author)} &middot; ${new Date(note.timestamp).toLocaleString()}</div>
+                        <div class="note-content" style="margin-bottom:10px;">${note.content}</div>
+                    </div>
+                </div>
+            `;
+            document.body.style.overflow = 'hidden';
+            document.addEventListener('keydown', escFullscreenListener);
+        }
+        function closeFullscreenNote() {
+            document.getElementById('fullscreen-note-root').innerHTML = '';
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', escFullscreenListener);
+        }
+        function escFullscreenListener(e) {
+            if (e.key === 'Escape') closeFullscreenNote();
+        }
+        window.closeFullscreenNote = closeFullscreenNote;
+
+        // Render notes as a modal popup
+        function renderNotesModal() {
+            const notes = getNotes();
+            let notesHtml = '';
+            if (notes.length === 0) {
+                notesHtml = '<li style="color:var(--text-secondary);text-align:center;padding:18px 0;">No notes yet. Be the first to add one!</li>';
+            } else {
+                notesHtml = notes.map((note, idx) => `
+                    <li class="note-item" style="margin-bottom:18px;">
+                        <div class="note-meta">
+                            <strong>${escapeHTML(note.title)}</strong>
+                            <span>by ${escapeHTML(note.author)}</span>
+                            <span>&middot;</span>
+                            <span>${new Date(note.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="note-actions">
+                            <button type="button" class="view-btn" data-idx="${idx}">View</button>
+                            ${note.userId === currentUserId ? `
+                                <button type="button" class="edit-btn" data-idx="${idx}">Edit</button>
+                                <button type="button" class="delete-btn" data-idx="${idx}">Delete</button>
+                            ` : ''}
+                        </div>
+                    </li>
+                `).join('');
+            }
+            showModal(`
+                <h3>All Notes</h3>
+                <ul id="notes-list-modal" style="list-style:none;padding:0;margin:0 0 12px 0;">${notesHtml}</ul>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal()">Close</button>
+                </div>
+            `);
+
+            // Attach event listeners for view, edit, delete inside modal
+            const notesList = document.getElementById('notes-list-modal');
+            if (!notesList) return;
+
+            notesList.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-idx'));
+                    const note = getNotes()[idx];
+                    closeModal();
+                    showFullscreenNote(note);
+                });
+            });
+
+            notesList.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-idx'));
+                    const notes = getNotes();
+                    const note = notes[idx];
+                    showModal(`
+                        <h3>Edit Note</h3>
+                        <form id="edit-note-form">
+                            <div class="input-section">
+                                <input type="text" id="edit-title" value="${escapeHTML(note.title)}" required maxlength="64" style="width:100%;margin-bottom:8px;padding:10px 12px;border-radius:10px;">
+                            </div>
+                            <div class="input-section">
+                                <div id="edit-content" class="content-editable-div" contenteditable="true" style="width:100%;min-height:60px;max-height:1000px;padding:10px 12px;resize:none;border-radius:10px;background:var(--input-bg);color:var(--text-main);">${note.content}</div>
+                            </div>
+                            <div class="input-section" style="gap:0;">
+                                <button type="button" class="add-image-btn" id="edit-add-image-btn" style="margin-top:8px;">
+                                    <svg width="20" height="20" fill="none" style="vertical-align:middle;" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="14" height="10" rx="2" stroke="#fff" stroke-width="2" fill="none"/><circle cx="7" cy="10" r="1.5" fill="#fff"/><path d="M8 13l2-2 3 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                                    Add Image
+                                </button>
+                                <input type="file" id="edit-images" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" onclick="closeModal()">Cancel</button>
+                                <button type="submit">Save</button>
+                            </div>
+                        </form>
+                    `);
+
+                    // Add image insert logic for edit modal
+                    const editAddImageBtn = document.getElementById('edit-add-image-btn');
+                    const editImagesInput = document.getElementById('edit-images');
+                    const editContentDiv = document.getElementById('edit-content');
+                    editAddImageBtn.addEventListener('click', function() {
+                        editImagesInput.value = "";
+                        editImagesInput.click();
+                    });
+                    editAddImageBtn.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            editImagesInput.value = "";
+                            editImagesInput.click();
+                        }
+                    });
+                    editImagesInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(evt) {
+                                insertImageAtCaret(editContentDiv, evt.target.result);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    // Expand contenteditable as user types
+                    function autoResizeEdit() {
+                        editContentDiv.style.height = 'auto';
+                        editContentDiv.style.height = (editContentDiv.scrollHeight) + 'px';
+                    }
+                    editContentDiv.addEventListener('input', autoResizeEdit);
+                    autoResizeEdit();
+
+                    document.getElementById('edit-note-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const newTitle = document.getElementById('edit-title').value.trim();
+                        const newContent = editContentDiv.innerHTML.trim();
+                        if (!newTitle || !newContent) return;
+                        notes[idx].title = newTitle;
+                        notes[idx].content = newContent;
+                        saveNotes(notes);
+                        closeModal();
+                        renderNotesModal();
+                    });
+                });
+            });
+
+            notesList.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-idx'));
+                    showModal(`
+                        <h3>Delete Note</h3>
+                        <div>Are you sure you want to delete this note?</div>
+                        <div class="modal-actions">
+                            <button type="button" onclick="closeModal()">Cancel</button>
+                            <button type="button" id="confirm-delete-btn">Delete</button>
+                        </div>
+                    `);
+                    document.getElementById('confirm-delete-btn').addEventListener('click', function() {
+                        const notes = getNotes();
+                        notes.splice(idx, 1);
+                        saveNotes(notes);
+                        closeModal();
+                        renderNotesModal();
+                    });
+                });
+            });
+        }
+
+        // Add Note Form logic
+        const noteForm = document.getElementById('note-form');
+        const imagesInput = document.getElementById('images');
+        const addImageBtn = document.getElementById('add-image-btn');
+        const contentDiv = document.getElementById('content');
+        const authorInput = document.getElementById('author');
+        const titleInput = document.getElementById('title');
+
+        // Expand contenteditable as user types
+        function autoResize() {
+            contentDiv.style.height = 'auto';
+            contentDiv.style.height = (contentDiv.scrollHeight) + 'px';
+        }
+        contentDiv.addEventListener('input', autoResize);
+        autoResize();
+
+        // Insert image at caret position in contenteditable div
+        function insertImageAtCaret(editableDiv, imageSrc) {
+            editableDiv.focus();
+            let sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0) {
+                editableDiv.innerHTML += `<img src="${imageSrc}" alt="Note Image">`;
+                return;
+            }
+            let range = sel.getRangeAt(0);
+            range.collapse(false);
+            // Create image node
+            let img = document.createElement('img');
+            img.src = imageSrc;
+            img.alt = "Note Image";
+            // Insert image node at caret
+            range.insertNode(img);
+            // Move caret after image
+            range.setStartAfter(img);
+            range.setEndAfter(img);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            autoResize();
+        }
+
+        // Add Images button logic for main form
+        addImageBtn.addEventListener('click', function() {
+            imagesInput.value = "";
+            imagesInput.click();
+        });
+        addImageBtn.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                imagesInput.value = "";
+                imagesInput.click();
+            }
+        });
+        imagesInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    insertImageAtCaret(contentDiv, evt.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        noteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const author = authorInput.value.trim();
+            const title = titleInput.value.trim();
+            const content = contentDiv.innerHTML.trim();
+            if (!author || !title || !content) return;
+            const notes = getNotes();
+            notes.unshift({
+                author,
+                title,
+                content,
+                timestamp: Date.now(),
+                userId: currentUserId
+            });
+            saveNotes(notes);
+            // Clear all fields after adding note so another user can add their data
+            this.reset();
+            contentDiv.innerHTML = '';
+            autoResize();
+            // Optionally, focus the first field for next user
+            authorInput.focus();
+        });
+
+        // Show notes modal on button click
+        document.getElementById('show-notes-btn').addEventListener('click', function() {
+            renderNotesModal();
+        });
+
+        // Expose closeModal for modal buttons
+        window.closeModal = closeModal;
+    </script>
+</body>
+<footer style="
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 18px;
+    margin: 0 auto;
+    width: 340px;
+    max-width: 92vw;
+    background: linear-gradient(90deg, #23272a 60%, #4f8cff 100%);
+    padding: 10px 18px 10px 18px;
+    text-align: center;
+    box-shadow: 0 0 12px 0 #4f8cff55, 0 2px 12px #0008;
+    border-radius: 18px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+">
+    <p style="
+        color: #fdf6f6;
+        font-size: 1em;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-shadow: 0 0 6px #4f8cff, 0 0 2px #fff, 0 2px 6px #0008;
+        margin: 0;
+        filter: drop-shadow(0 0 6px #4f8cff88);
+        animation: glowFooter 2.2s infinite alternate;
+    " id="sticky-footer-text">
+        Add your notes here. Need help? <span style="color:#ffb300;text-shadow:0 0 6px #ffb300,0 0 2px #fff;">Contact us</span>
+    </p>
+    <style>
+        footer {
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            bottom: 18px;
+            width: 340px;
+            max-width: 92vw;
+            border-radius: 18px;
+            z-index: 1000;
+            box-shadow: 0 0 12px 0 #4f8cff55, 0 2px 12px #0008;
+            background: linear-gradient(90deg, #23272a 60%, #4f8cff 100%);
+            padding: 10px 18px 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body {
+            padding-bottom: 60px; /* adjust for new footer height */
+        }
+        @media (max-width: 480px) {
+            footer {
+                width: 98vw;
+                max-width: 98vw;
+                padding: 8px 4vw 8px 4vw;
+                border-radius: 10px;
+            }
+            body {
+                padding-bottom: 48px;
+            }
+            #sticky-footer-text {
+                font-size: 0.95em !important;
+            }
+        }
+    </style>
+    <style>
+        @keyframes glowFooter {
+            0% {
+                text-shadow: 0 0 8px #4f8cff, 0 0 2px #fff, 0 2px 8px #0008;
+                filter: drop-shadow(0 0 8px #4f8cff88);
+            }
+            100% {
+                text-shadow: 0 0 18px #4f8cff, 0 0 8px #fff, 0 2px 18px #4f8cff88;
+                filter: drop-shadow(0 0 18px #4f8cffcc);
+            }
+        }
+        footer span {
+            font-weight: 700;
+            text-shadow: 0 0 8px #ffb300, 0 0 2px #fff;
+            filter: drop-shadow(0 0 8px #ffb30088);
+            animation: glowFooterSpan 2.2s infinite alternate;
+        }
+        @keyframes glowFooterSpan {
+            0% {
+                text-shadow: 0 0 8px #ffb300, 0 0 2px #fff;
+                filter: drop-shadow(0 0 8px #ffb30088);
+            }
+            100% {
+                text-shadow: 0 0 18px #ffb300, 0 0 8px #fff;
+                filter: drop-shadow(0 0 18px #ffb300cc);
+            }
+        }
+    </style>
+</footer>
+</html>

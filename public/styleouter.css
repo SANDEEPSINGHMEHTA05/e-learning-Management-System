@@ -1,0 +1,709 @@
+/* Modified CSS */
+* {
+  margin: 0;
+  padding: 0;
+  transition: all 1s;
+  box-sizing: border-box;
+}
+
+/* Default theme (light) */
+:root {
+  --background-color: #fff1eb;
+  --background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+  --text-color: black;
+  --link-color: black;
+  --accordion-bg-color: #eee;
+  --accordion-hover-bg-color: #ccc;
+  --sem-bg-color: rgba(255, 253, 253, 0.363);
+  --footer-bg-image: linear-gradient(to top, #ace0f9 0%, #fff1eb 100%);
+  --container-border: 1px solid rgba(0, 0, 0, 0.582);
+  --theme-select-bg-color: #fffdfd5d;
+  --theme-select-color: #000;
+  --theme-select-border: 1px solid #000000;
+  --tele-bg-color: #04befe;
+  --tele-bg-color-hover: #4ed0fc;
+  --clickable-link-color: #1E88E5;
+  --top-heading-bg-color: transparent;
+}
+
+/* Dark theme overrides */
+body.dark-mode {
+  --tele-bg-color-hover: rgb(214, 212, 212);
+  --tele-bg-color: white;
+  --background-image: url('./images/mainbgbca.jpg');
+  --text-color: white;
+  --link-color: whitesmoke;
+  --accordion-bg-color: #eee;
+  --accordion-hover-bg-color: #ccc;
+  --sem-bg-color: rgba(2, 3, 63, 0.733);
+  --top-heading-bg-color: rgba(2, 3, 63, 0.733);
+  --footer-bg-image: rgba(2, 3, 63, 0.733);
+  --container-border: 1px solid rgba(255, 255, 255, 0.541);
+  --theme-select-bg-color: #ffffff1f;
+  --theme-select-color: #fff;
+  --theme-select-border: 1px solid gray;
+  --clickable-link-color: #7ed9f5;
+}
+
+
+/* Feedback */
+.feedback-div{
+  background-color: var(--sem-bg-color);
+  border:0.5px solid grey;
+  margin: 15px 5px;
+  border-radius: 15px;
+  padding: 10px;
+}
+.feedback-div a{
+  color: var(--clickable-link-color);
+}
+
+/* Fixed height layout with sticky footer */
+html,
+body {
+  /* height: 100%; */
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  background-color: #000;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-image: var(--background-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--text-color);
+  font-family: "Kalam", cursive;
+  min-height: 100vh;
+  /* Ensure at least full viewport height */
+}
+
+/* For light mode gradient */
+body:not(.dark-mode) {
+  background-size: 100% 100%;
+}
+
+.page-container {
+  flex: 1 0 auto;
+  /* Will grow but not shrink, taking available space */
+  display: flex;
+  flex-direction: column;
+}
+
+#searchbox-container>input {
+  margin-top: 8px;
+}
+
+.content-area {
+  flex: 1 0 auto;
+  /* Take remaining space */
+  padding: 20px;
+}
+
+.top-heading {
+  background-color: var(--top-heading-bg-color);
+  text-align: center;
+  padding: 5px;
+  border-bottom: 1px solid grey;
+  border-radius: 0 0 15px 15px;
+}
+
+/* Sticky footer */
+footer {
+  flex-shrink: 0;
+  /* Prevent footer from shrinking */
+  background: var(--footer-bg-image);
+  background-size: 100% 100%;
+  padding: 5px 0;
+  width: 100%;
+  z-index: 10;
+  border-radius: 15px 15px 0 0;
+  outline: 1px solid grey;
+}
+
+.outer-sib-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.social-box-2 {
+  align-self: flex-end;
+}
+
+a {
+  color: var(--link-color);
+  font-size: 1.2rem;
+}
+
+h1,
+h2 {
+  text-align: center;
+  padding-top: 5px;
+}
+
+#small-head {
+  font-size: 15px;
+  display: block;
+}
+
+.sem-style {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sem-style input {
+  border-radius: 10px;
+  outline: none;
+  border: 1px solid black;
+  padding: 4px 8px;
+  font-size: 16px;
+}
+
+#suggestions {
+  padding: 0 5px;
+}
+
+.sem,
+.sem-style {
+  background-color: var(--sem-bg-color);
+  border-radius: 15px;
+  margin: 10px 0;
+}
+
+.sem-container {
+  display: grid;
+  margin: 0 0 15px;
+}
+
+.sem-container>div {
+  border: 0.5px solid grey;
+  border-radius: 10px;
+  margin: 5px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+}
+
+@media only screen and (min-width: 600px) {
+  .sem-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media only screen and (min-width: 800px) {
+  .sem-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .sem-container {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.sib-footer {
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 10px;
+}
+
+.sib-footer ol {
+  padding: 8px 30px;
+}
+
+.sib-footer li {
+  padding-bottom: 4px;
+}
+
+/* Accordion */
+.ac {
+  background-color: var(--accordion-bg-color);
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: center;
+  border: none;
+  border-radius: 15px;
+  outline: none;
+  margin: 10px 0;
+  font-family: "Kalam", cursive;
+  font-size: 1.4rem;
+}
+
+.active,
+.ac:hover {
+  background-color: var(--accordion-hover-bg-color);
+}
+
+.panel {
+  padding: 0 18px;
+  background-color: rgba(255, 255, 255, 0.151);
+  display: none;
+  overflow: hidden;
+}
+
+.log {
+  background-color: black;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 15px 8px;
+  border: 1px solid white;
+}
+
+@media only screen and (max-width: 600px) {
+  h2 {
+    font-size: 16px;
+    padding: 4px 0;
+  }
+}
+
+/* Social plug */
+.social-plug-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.social-box {
+  margin: 5px auto;
+  padding: 10px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.social-box>div>a {
+  text-decoration: none;
+  padding: 4px;
+  display: inline-block;
+  border-radius: 30px;
+  font-size: 17px;
+  margin: 0 10px;
+  cursor: pointer;
+  background-color: var(--tele-bg-color);
+  text-align: center;
+  color: black;
+  padding: 10px 15px;
+  box-sizing: border-box;
+  vertical-align: middle;
+  font-weight: 900;
+}
+
+.social-box>div>a:hover {
+  background-color: var(--tele-bg-color-hover);
+}
+
+img.social-logo {
+  height: 40px;
+}
+
+@media only screen and (max-width: 600px) {
+  .social-plug-container {
+    flex-direction: column;
+  }
+
+  img.dis-logo {
+    height: 40px;
+  }
+
+  .social-box>div>a {
+    font-size: 15px;
+    margin: 0 5px;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .sem-container>div {
+    height: 65px !important;
+  }
+
+  /* .outer-sib-footer {
+    display: block;
+  } */
+}
+
+/* Semester Selector */
+#semester-selector {
+  font-size: 22px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+#semester-selector>div {
+  padding: 5px;
+  border-radius: 10px;
+  background-color: var(--sem-bg-color);
+  border: 1px solid grey;
+}
+
+#semester-selector select {
+  padding: 5px;
+  font-size: 20px;
+}
+
+#semester-selector select option {
+  padding: 5px;
+  font-size: 18px;
+}
+
+
+
+/* CSS from main page  */
+.sem {
+  display: none;
+}
+
+#semester {
+  cursor: pointer;
+}
+
+.sem.activesem {
+  display: block;
+}
+
+.container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: var(--container-border);
+  background-color: var(--sem-bg-color);
+}
+
+.desktop-container {
+  display: block;
+}
+
+.mobile-container {
+  display: none;
+}
+
+.theme-select {
+  background-color: var(--theme-select-bg-color);
+  color: var(--theme-select-color);
+  border: var(--theme-select-border);
+  border-radius: 4px;
+  padding: 2px 5px;
+  cursor: pointer;
+}
+
+@media (max-width: 850px) {
+  .container {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    height: auto;
+    padding: 10px 20px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .desktop-container {
+    display: none;
+  }
+
+  .mobile-container {
+    display: block;
+  }
+}
+
+/* *************************************************** search */
+#suggestions {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+  display: none;
+  box-sizing: border-box;
+}
+
+#suggestions a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: black;
+  font-size: 16px;
+}
+
+#suggestions a:hover {
+  background-color: #f0f0f0;
+}
+
+#search {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+#searchbox-container {
+  position: relative;
+  width: 95vw;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.footer-text {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.heart {
+  color: #E53946;
+  font-size: 1.5rem;
+}
+
+.clickable-link {
+  font-weight: bold;
+  color: var(--clickable-link-color);
+  transition: color 0.3s ease;
+}
+
+.clickable-link:hover {
+  color: #1565C0;
+}
+
+.social-box-2 {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.social-box-2 a {
+  margin: 0 10px;
+}
+
+.social-box-2 a:first-child img {
+  height: 38px;
+  width: 38px;
+}
+
+.social-box-2 img {
+  transition: opacity 0.3s ease;
+}
+
+.social-box-2 img:hover {
+  opacity: 0.6;
+}
+
+/* Commits terminal box  */
+.terminal-window {
+  width: 700px;
+  max-width: 100%;
+  margin: 20px auto;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  overflow-x: auto;      /* Horizontal scroll on entire terminal */
+  overflow-y: hidden;    /* Hide vertical scroll here */
+}
+
+@media screen and (max-width: 850px) {
+  .terminal-window {
+    width: 96%;
+  }
+}
+
+.terminal-header {
+  background-color: #333;
+  color: #fff;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #444;
+}
+
+.terminal-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+  flex-grow: 1;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.terminal-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+}
+
+.terminal-button.close {
+  background-color: #ff5f56;
+}
+
+.terminal-button.minimize {
+  background-color: #ffbd2e;
+}
+
+.terminal-button.maximize {
+  background-color: #27c93f;
+}
+
+.terminal-content {
+  padding: 0;
+  background-color: #1e1e1e;
+  min-height: 300px;
+  white-space: nowrap;
+  overflow-x: visible;   /* Changed from auto to visible */
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+}
+
+.terminal-prompt {
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.terminal-user {
+  color: #0f0;
+}
+
+.terminal-host {
+  color: #0f0;
+}
+
+.terminal-path {
+  color: #0080ff;
+}
+
+.terminal-symbol {
+  color: #fff;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.terminal-command {
+  color: #fff;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background-color: #fff;
+  animation: blink 1s step-start infinite;
+  margin-left: 5px;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+#commit-log {
+  margin: 0;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 14px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;         /* allow content to overflow horizontally */
+  white-space: normal;
+  display: inline-block;       /* let it grow horizontally */
+  min-width: max-content;      /* trigger parent scroll if content is long */
+}
+
+#commit-messages {
+  color: #0f0;
+  margin-top: 10px;
+  white-space: nowrap;
+  display: block;
+  min-width: max-content;
+  overflow: visible;
+}
+
+/* Fixed commit entry styling for single line display */
+.commit-entry {
+  margin-bottom: 8px;
+  white-space: nowrap;  /* no wrapping */
+  overflow: visible;    /* prevent scroll */
+  display: block;
+  line-height: 1.4;
+  /* Remove any width restrictions */
+}
+
+.commit-hash {
+  color: #f0ad4e;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.commit-date {
+  color: #5bc0de;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.commit-message {
+  color: #0f0;
+  white-space: nowrap;
+}
+
+.automated-indicator {
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.automated-commit {
+  opacity: 0.7;
+}
+
+.commit-stats {
+  color: #fff;
+  padding: 10px;
+  font-family: monospace;
+  border-bottom: 1px dotted #444;
+  background-color: #222;
+}
+
+.commit-stats-label {
+  color: #5bc0de;
+  margin-right: 5px;
+}
+
+.commit-count {
+  color: #f0ad4e;
+  margin-right: 10px;
+}
+
+.last-updated {
+  color: #0f0;
+}
+
+.terminal-section {
+  padding: 5px 0;
+}
